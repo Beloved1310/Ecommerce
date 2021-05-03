@@ -10,14 +10,8 @@ const purchase = require('./Routes/order')
 const debug = require("debug")("app");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+require('./startup/db')();
 
-mongoose.connect(process.env.MONGODBURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useFindAndModify: false,
-  useCreateIndex: true,
-}).then(() => console.log('Connected to MongoDB...'))
-.catch(err => console.error('Could not connect to MongoDB...', err))
 
 app.use("/", user);
 app.use("/", product);
