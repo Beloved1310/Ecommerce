@@ -7,7 +7,7 @@ require('./startup/db')();
 
 const user = require("./Routes/user");
 const product = require("./Routes/product");
-const purchase = require('./Routes/order')
+const purchase = require('./Routes/order');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
