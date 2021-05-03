@@ -103,16 +103,36 @@ router.post("/intialise/flutterwave", auth, async (req, res) => {
   console.log(response);
 });
 
-router.post("/webhook/details", auth, async (req, res) => {
-  const {data, status, message}= req.body
+router.post("/webhook/details", async (req, res) => {
+
+  var hash = req.headers["verify-hash"];
+  if(!hash){
+    throw new Error('something bad happened');
+  }else {
+    const {data, status, message}= req.body
+  const createdWebhook = new Order({
+    status,
+    message,
+    data 
+  });
+
+  await createdWebhook.save()
+  
+  }
+  const secret_hash = process.env.MY_HASH;
+
+  if(hash !== secret_hash){
+    throw new Error('something bad happened');
+  }else{
+    const {data, status, message}= req.body
   const createdWebhook = new Order({
     status,
     message,
     data 
   })
 
-  await createdWebhook.save()
   res.send(createdWebhook)
+  }
 
 });
 
