@@ -1,18 +1,16 @@
 // const error = require('./middleware/error');
 const express = require("express");
-const app = express();
-
 require("dotenv").config();
-const mongoose = require("mongoose");
+const debug = require("debug")("app");
+const app = express();
+require('./startup/db')();
+
 const user = require("./Routes/user");
 const product = require("./Routes/product");
 const purchase = require('./Routes/order')
-const debug = require("debug")("app");
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-require('./startup/db')();
-
-
 app.use("/", user);
 app.use("/", product);
 app.use("/", purchase);
