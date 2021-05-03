@@ -18,7 +18,7 @@ router.get("/", async (req, res) => {
 // ...........get one Product .......
 
 router.get("/:id", async (req, res) => {
-  const product = await Product.findById(req.params.id).populate('user');
+  const product = await Product.findById(req.params.id).populate('user', 'fullname email -_id');
   if (product) {
   res.json(product);
   }else{

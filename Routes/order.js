@@ -22,7 +22,7 @@ router.get("/order/:id", auth, async (req, res) => {
 // >>>>>>>>>>>>>pass user token
 // >>>>>>>>>>>>>>> see my purchase product
 router.get("/order/user/mine", auth, async (req, res) => {
-  const orders = await Order.find({ user: req.user._id }).populate('product').populate('user');
+  const orders = await Order.find({ user: req.user._id }).populate('product').populate('user fullname email -_id');
   res.send(orders);
 });
 
@@ -46,7 +46,7 @@ router.post("/order", auth, async (req, res) => {
     res.status(201).send({ message: "New Order Created", order: createdOrder });
   }
 });
-
+                           
 // app.get('/order/product/flutterwave', (req, res) => {
 //   res.send(process.env.PAYPAL_CLIENT_ID || 'sb');
 // });
@@ -87,7 +87,8 @@ router.post("/order", auth, async (req, res) => {
 //   })
 // );
 
-router.post("/intialise/flutterwave",  async (req, res) => {
+router.post("/intialise/flutterwave", auth, async (req, res) => {
+   
   const headers = {
     authorization: process.env.SECRET_KEY,
     "content-type": "application/json",
@@ -102,22 +103,38 @@ router.post("/intialise/flutterwave",  async (req, res) => {
   console.log(response);
 });
 
-router.get("/verify/flutterwave/:id/verify", async (req, res) => {
-  const id = req.params.id;
-  await axios
-    .get(`https://api.flutterwave.com/v3/transactions/id/verify/`, {
+router.post("/webhook/details", auth, async (req, res) => {
+  const {data, status, message}= req.body
+  const createdWebhook = new Order({
+    status,
+    message,
+    data 
+  })
+
+  await createdWebhook.save()
+  res.send(createdWebhook)
+
+});
+
+
+
+
+router.get("/verify/flutterwave/verify/:ref", async (req, res) => {
+  const ref = req.params.ref;
+ const response =  await axios
+    .get(`https://api.flutterwave.com/v3/transactions/${ref}/verify/`, {
       headers: {
         authorization: process.env.SECRET_KEY,
         "content-type": "application/json",
         "cache-control": "no-cache",
       },
     })
-    .then((response) => {
-      console.log(response.body);
-    })  
-    .catch((error) => {
+    if (response){
+      console.log(response.data);
+    }else{
       console.log(error);
-    });
+    }
+    
 });
 
 module.exports = router;

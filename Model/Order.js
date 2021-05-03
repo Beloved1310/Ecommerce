@@ -1,7 +1,19 @@
  const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema(
+  
   {
+    status: String,
+    data :{
+      id: Number,
+      amount: Number,
+      status: String,
+      customer: {
+        id: Number,
+        name: String,
+        email: String
+      }
+    },
     _id: mongoose.Schema.Types.ObjectId,
     product: {
       type: mongoose.Schema.Types.ObjectId,
@@ -29,12 +41,14 @@ const OrderSchema = new mongoose.Schema(
     taxPrice: { type: Number, required: true },
     totalPrice: { type: Number, required: true },
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    seller: { type: mongoose.Schema.Types.ObjectID, ref: 'User' },
+    // seller: { type: mongoose.Schema.Types.ObjectID, ref: 'User' },
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
     deliveredAt: { type: Date },
   },
+  
+
  {timestamps: true}
 );
 
