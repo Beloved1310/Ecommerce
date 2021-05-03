@@ -1,10 +1,10 @@
   const express = require("express");
-const User = require("../Model/User");
+// const User = require("../Model/User");
 const Product = require("../Model/Products");
 const Order = require("../Model/Order");
 const auth = require("../middleware/auth");
 const router = express.Router();
-const multer = require("multer");
+// const multer = require("multer");
 const mongoose = require("mongoose");
 
 const axios = require("axios");

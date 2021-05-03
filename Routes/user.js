@@ -5,10 +5,10 @@ const bcrypt = require("bcrypt");
 const User = require("../Model/User");
 const auth = require("../middleware/auth");
 const jwt = require("jsonwebtoken");
-const _ = require("lodash");
+// const _ = require("lodash");
 
 const router = express.Router();
-const debug = require("debug")("app");
+
 
 const validate = require("../validation/signupValidation");
 const loginvalidate = require("../validation/loginValidate");
