@@ -50,44 +50,6 @@ router.post("/order", auth, async (req, res) => {
   }
 });
 
-// app.get('/order/product/flutterwave', (req, res) => {
-//   res.send(process.env.PAYPAL_CLIENT_ID || 'sb');
-// });
-
-// router.put( 'order/:id/pay',auth, (async (req, res) => {
-//      if (order) {
-//       order.isPaid = true;
-//       order.paidAt = Date.now();
-//       order.paymentResult = {
-//         id: req.body.id,
-//         status: req.body.status,
-//         update_time: req.body.update_time,
-//         email_address: req.body.email_address,
-//       };
-//       const updatedOrder = await order.save();
-//       mailgun()
-//         .messages()
-//         .send(
-//           {
-//             from: 'Amazona <amazona@mg.yourdomain.com>',
-//             to: `${order.user.name} <${order.user.email}>`,
-//             subject: `New order ${order._id}`,
-//             html: payOrderEmailTemplate(order),
-//           },
-//           (error, body) => {
-//             if (error) {
-//               console.log(error);
-//             } else {
-//               console.log(body);
-//             }
-//           }
-//         );
-//       res.send({ message: 'Order Paid', order: updatedOrder });
-//     } else {
-//       res.status(404).send({ message: 'Order Not Found' });
-//     }
-//   })
-// );
 
 router.post("/intialise/flutterwave", auth, async (req, res) => {
   const headers = {
@@ -132,9 +94,9 @@ router.get("/verify/flutterwave/verify/:ref", async (req, res) => {
     }
   );
   if (response) {
-    console.log(response.data);
+    res.send(response.data);
   } else {
-    console.log(error);
+    res.send(error);
   }
 });
 
