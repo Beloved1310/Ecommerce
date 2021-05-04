@@ -4,7 +4,6 @@ const Product = require("../Model/Products");
 const Order = require("../Model/Order");
 const auth = require("../middleware/auth");
 const router = express.Router();
-// const multer = require("multer");
 const mongoose = require("mongoose");
 
 const axios = require("axios");
@@ -22,9 +21,11 @@ router.get("/order/:id", auth, async (req, res) => {
 // >>>>>>>>>>>>>pass user token
 // >>>>>>>>>>>>>>> see my purchase product
 router.get("/order/user/mine", auth, async (req, res) => {
-  const orders = await Order.find({ user: req.user._id })
-    .populate("user", "fullname email -_id");
-    console.log(orders)
+  const orders = await Order.find({ user: req.user._id }).populate(
+    "user",
+    "fullname email -_id"
+  );
+  console.log(orders);
   res.send(orders);
 });
 
@@ -106,10 +107,10 @@ router.post("/intialise/flutterwave", auth, async (req, res) => {
 router.post("/webhook/details", async (req, res) => {
   var hash = req.headers["verify-hash"];
   if (hash !== process.env.MY_HASH) {
-    res.send(401, 'Unauthorized User');;
+    res.send(401, "Unauthorized User");
   } else {
     const { data, status, message } = req.body;
-    const createdWebhook = await Webhook.create ({
+    const createdWebhook = await Webhook.create({
       status,
       message,
       data,

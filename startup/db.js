@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const debug = require("debug")("app");
 
 module.exports = async () => {
   mongoose
@@ -8,6 +9,6 @@ module.exports = async () => {
       useFindAndModify: false,
       useCreateIndex: true,
     })
-    .then(() => console.log("Connected to MongoDB..."))
+    .then(() => debug("Connected to MongoDB..."))
     .catch((err) => console.error("Could not connect to MongoDB...", err));
 };

@@ -1,4 +1,4 @@
-   /* eslint consistent-return: "off" */
+/* eslint consistent-return: "off" */
 
 const express = require("express");
 const bcrypt = require("bcrypt");
@@ -7,7 +7,6 @@ const auth = require("../middleware/auth");
 const jwt = require("jsonwebtoken");
 
 const router = express.Router();
-
 
 const validate = require("../validation/signupValidation");
 const loginvalidate = require("../validation/loginValidate");
@@ -37,8 +36,8 @@ router.post("/signup", async (req, res) => {
   createdUser.password = await bcrypt.hash(createdUser.password, salt);
 
   await createdUser.save();
-
-  res.status(200).send({ message: "Registered User" });
+  const response = { fullname, email };
+  res.status(200).send({ message: "Registered User", response });
 });
 
 router.post("/login", async (req, res) => {
@@ -55,7 +54,8 @@ router.post("/login", async (req, res) => {
 
   const token = user.generateAuthToken();
   res.header("x-auth-token", token);
-  res.send({ message: "Login Successful" });
+  const response = { email, token };
+  res.send({ message: "Login Successful", response });
 });
 
 router.post("/forgotpassword", async (req, res) => {
@@ -68,7 +68,9 @@ router.post("/forgotpassword", async (req, res) => {
         .json({ error: "User with this email does not exists" });
     }
 
-    const token = jwt.sign({ _id:user.id}, process.env.FORGOT_PASSWORD, {expiresIn: '20m'});
+    const token = jwt.sign({ _id: user.id }, process.env.FORGOT_PASSWORD, {
+      expiresIn: "20m",
+    });
     // const token = jwt.sign({ _id: user.id }, process.env.FORGOT_PASSWORD);
 
     const data = {
@@ -143,16 +145,6 @@ router.post("/newpassword", async (req, res) => {
   }
   user.save();
   res.json({ message: "password updated" });
-
-  // bcrypt.hash(newPass, 12).then(hashedpassword => {
-  //   user.password = hashedpassword
-  //   user.resetLink = ""
-  //   user.save().then ((saveduser) =>{
-  //     res.json({ message: "password updated success"})
-  //   })
-  // }).catch (err => {
-  //   console.log(err)
-  // })
 });
 
 router.get("/profile/:id", auth, async (req, res) => {
