@@ -1,3 +1,4 @@
+const asyncMiddleware = require("../middleware/async");
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -17,16 +18,16 @@ router.get("/", async (req, res) => {
 
 // ...........get one Product .......
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", asyncMiddleware(async (req, res) => {
   const product = await Product.findById(req.params.id).populate('user', 'fullname email -_id');
   if (product) {
   res.json(product);
   }else{
     res.status(404).send({ message : 'Product Not Found'})
   }
-});
+}));
 
-router.post("/product", auth, upload.single("image"), async (req, res) => {
+router.post("/product", auth, upload.single("image"), asyncMiddleware(async (req, res) => {
   const { name, price, quantity } = req.body;
 
   const { secure_url: image, public_id: cloudinary_id } = await cloudinary.uploader.upload(req.file.path);
@@ -41,11 +42,11 @@ router.post("/product", auth, upload.single("image"), async (req, res) => {
   });
 
   res.json(createdProduct);
-});
+}));
 
 
 
-router.put('/product/:id', upload.single('image'), async (req, res) => {
+router.put('/product/:id',upload.single('image'),asyncMiddleware( async (req, res) => {
   const product = await Product.findById(req.params.id);
   await cloudinary.uploader.destroy(product.cloudinary_id);
   const { secure_url: image, public_id: cloudinary_id } = await cloudinary.uploader.upload(req.file.path);
@@ -61,6 +62,6 @@ router.put('/product/:id', upload.single('image'), async (req, res) => {
       },
     });
   res.status(200).json({ message: 'Updated!' });
-});
+}));
 
 module.exports = router;
