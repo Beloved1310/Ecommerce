@@ -4,12 +4,26 @@ const mongoose = require("mongoose");
 const UserSchema = new mongoose.Schema({
   fullname: {
     type: String,
+    required : true,
   },
   email: {
     type: String,
+    required : true,
   },
   password: {
     type: String,
+    required : true,
+  },
+  gender: String,
+  age: Number,
+  education : {
+    grade: String,
+    
+  },
+  experience: {
+    position: String,
+    company: String,
+    location: String,
   },
   resetLink: {
     date: String,
@@ -18,7 +32,8 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, process.env.JWT_KEY);
+  const token = jwt.sign({ _id: this._id ,fullname: this._fullname,
+    email: this.email}, process.env.JWT_KEY);
   return token;
 };
 

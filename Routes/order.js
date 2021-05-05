@@ -1,6 +1,7 @@
 const asyncMiddleware = require("../middleware/async");
 const express = require("express");
-const Webhook = require("../Model/Webhook");
+const User = require("../Model/User");
+const Payment = require("../Model/Payment");
 const Product = require("../Model/Products");
 const Order = require("../Model/Order");
 const auth = require("../middleware/auth");
@@ -42,6 +43,7 @@ router.post(
   "/order",
   auth,
   asyncMiddleware(async (req, res) => {
+
     const headers = {
       authorization: process.env.SECRET_KEY,
       "content-type": "application/json",
@@ -77,6 +79,40 @@ router.post(
   })
 );
 
+router.post("/initialise/payment", auth, asyncMiddleware(async(req,res) => {
+  const headers = {
+          authorization: process.env.SECRET_KEY,
+          "content-type": "application/json",
+          "cache-control": "no-cache",
+        };
+
+        const response = await axios.post(
+                  "https://api.flutterwave.com/v3/payments",
+                  req.body,
+                  { headers }
+            )
+            if (response){
+              res.send(response.data)
+            }else{
+              res.send(error)
+            }
+}))
+
+// router.post(
+//   "/initialise/payment",
+//   auth,
+//   asyncMiddleware(async (req, res) => {
+
+//     const headers = {
+//       authorization: process.env.SECRET_KEY,
+//       "content-type": "application/json",
+//       "cache-control": "no-cache",
+//     };
+//     const response = await axios.post(
+//         "https://api.flutterwave.com/v3/payments",
+//         req.body,
+//         { headers }
+//   )});
 
 
 router.post(
@@ -87,7 +123,7 @@ router.post(
       res.send(401, "Unauthorized User");
     } else {
       const { data, status, message } = req.body;
-      const createdWebhook = await Webhook.create({
+      const createdWebhook = await Payment.create({
         status,
         message,
         data,

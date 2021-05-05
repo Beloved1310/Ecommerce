@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
- const WebtokenSchema = new mongoose.Schema({
+ const PaymentSchema = new mongoose.Schema({
  status: String,
  message: String,
 
@@ -15,4 +15,4 @@ const mongoose = require('mongoose');
    },
  }});
 
-module.exports = mongoose.model('Webtoken', WebtokenSchema);
+module.exports = mongoose.model('Payment', PaymentSchema);

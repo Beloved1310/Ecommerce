@@ -27,12 +27,12 @@ router.post(
     const { error } = validate(req.body);
     if (error) return res.status(400).json(error.details[0].message);
 
-    const { fullname, email, password } = req.body;
+    const { fullname, email, password, age, gender, education, experience} = req.body;
 
     const user = await User.findOne({ email });
     if (user) return res.status(400).send("User already registered");
 
-    const createdUser = new User({ fullname, email, password });
+    const createdUser = new User({ fullname, email, password,age,  gender, education, experience });
 
     const salt = await bcrypt.genSalt(10);
     createdUser.password = await bcrypt.hash(createdUser.password, salt);
