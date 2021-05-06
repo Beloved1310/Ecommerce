@@ -1,10 +1,10 @@
 module.exports = {
     
-    "extends": ["airbnb-base"],
+    "extends": ["airbnb-base/legacy", "prettier"],
     
 
     "rules": {
-        "linebreak-style": "off",
+       "linebreak-style": "off",
        "no-underscore-dangle" :"off",
        "no-console":"error"
     }
