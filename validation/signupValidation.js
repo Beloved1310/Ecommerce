@@ -1,4 +1,4 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
 module.exports = function validate(req) {
   const schema = Joi.object({
