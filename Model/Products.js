@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const ProductSchema = new mongoose.Schema(
   {
@@ -17,9 +17,9 @@ const ProductSchema = new mongoose.Schema(
     quantity: {
       type: String,
     },
-    user: { type: mongoose.Schema.Types.ObjectID, ref: "User" },
+    user: { type: mongoose.Schema.Types.ObjectID, ref: 'User' },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Product", ProductSchema);
+module.exports = mongoose.model('Product', ProductSchema);
