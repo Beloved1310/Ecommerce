@@ -1,14 +1,16 @@
-const mongoose = require("mongoose");
-const debug = require("debug")("app");
+const mongoose = require('mongoose');
+const debug = require('debug')('app');
 
 module.exports = async () => {
-  mongoose
-    .connect(process.env.MONGODBURI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-      useFindAndModify: false,
-      useCreateIndex: true,
-    })
-    .then(() => debug("Connected to MongoDB..."))
-    .catch((err) => console.error("Could not connect to MongoDB...", err));
+  const mongooseConnect = await mongoose.connect(process.env.MONGODBURI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: true,
+  });
+  if (mongooseConnect) {
+    debug('Connected to Database');
+  } else {
+    debug('Not Connected to Database');
+  }
 };
