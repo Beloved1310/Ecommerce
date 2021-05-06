@@ -152,7 +152,7 @@ router.get(
 
      if (response.data.status == 'success') {
        await Order.updateOne({}, {isPaid:true});
-      res.send({response : response.data.message, order: "Paid"})
+      console.log({response : response.data, order: "Paid"})
     } else {
       res.send(error);
     }
