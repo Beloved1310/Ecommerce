@@ -33,6 +33,18 @@
     "nodemon": "^2.0.7",
     "prettier": "^2.2.1"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js, json": [
+      "eslint --fix",
+      "prettier --single-quote --write",
+      "git add"
+    ]
+  },
   "engines": {
     "node": "12.x",
     "npm": "6.x"
