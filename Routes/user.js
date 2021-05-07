@@ -25,7 +25,7 @@ router.post(
   '/signup',
   asyncMiddleware(async (req, res) => {
     const { error } = validate(req.body);
-    if (error) return res.status(400).json(error.details[0].message);
+    if (error) return res.status(400).send(error.details[0].message);
 
     const {
       fullname,
@@ -161,7 +161,7 @@ router.post(
 
       return user.updateOne({ resetLink: token }, function (err, sucess) {
         if (err) {
-          return res.status(400).json({ error: 'reset password link error' });
+          return res.status(400).send({ error: 'reset password link error' });
         } else {
           transporter.sendMail(data);
         }
@@ -178,7 +178,7 @@ router.post(
   asyncMiddleware(async (req, res) => {
     const { Link, newPass } = req.body;
     let user = await User.findOne({ resetLink: Link });
-    if (!user) return res.status(422).json({ error: 'Try again' });
+    if (!user) return res.status(422).send({ error: 'Try again' });
 
     const hashedpassword = await bcrypt.hash(newPass, 12);
     if (hashedpassword) {
