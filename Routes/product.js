@@ -13,7 +13,7 @@ const upload = multer({ storage });
 // ...........get all Products..........
 router.get('/', async (req, res) => {
   const products = await Product.find();
-  res.json(products);
+  res.send(products);
 });
 
 // ...........get one Product .......
@@ -53,7 +53,7 @@ router.post(
       user: req.user._id,
     });
 
-    res.json(createdProduct);
+    res.send(createdProduct);
   })
 );
 
@@ -80,7 +80,7 @@ router.put(
         },
       }
     );
-    res.status(200).json({ message: 'Updated!' });
+    res.status(200).send({ message: 'Updated!' });
   })
 );
 
