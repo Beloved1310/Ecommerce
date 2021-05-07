@@ -1,17 +1,17 @@
 /* eslint consistent-return: "off" */
-const asyncMiddleware = require("../middleware/async");
-const express = require("express");
-const bcrypt = require("bcrypt");
-const User = require("../Model/User");
-const auth = require("../middleware/auth");
-const jwt = require("jsonwebtoken");
+const asyncMiddleware = require('../middleware/async');
+const express = require('express');
+const bcrypt = require('bcrypt');
+const User = require('../Model/User');
+const auth = require('../middleware/auth');
+const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 
-const validate = require("../validation/signupValidation");
-const loginvalidate = require("../validation/loginValidate");
-const nodemailer = require("nodemailer");
-const sendgridTransport = require("nodemailer-sendgrid-transport");
+const validate = require('../validation/signupValidation');
+const loginvalidate = require('../validation/loginValidate');
+const nodemailer = require('nodemailer');
+const sendgridTransport = require('nodemailer-sendgrid-transport');
 
 const transporter = nodemailer.createTransport(
   sendgridTransport({
@@ -22,50 +22,119 @@ const transporter = nodemailer.createTransport(
 );
 
 router.post(
-  "/signup",
+  '/signup',
   asyncMiddleware(async (req, res) => {
     const { error } = validate(req.body);
     if (error) return res.status(400).json(error.details[0].message);
 
-    const { fullname, email, password, age, gender, education, experience} = req.body;
+    const {
+      fullname,
+      email,
+      password,
+      age,
+      gender,
+      education,
+      experience,
+    } = req.body;
 
     const user = await User.findOne({ email });
-    if (user) return res.status(400).send("User already registered");
+    if (user) return res.status(400).send('User already registered');
 
-    const createdUser = new User({ fullname, email, password,age,  gender, education, experience });
+    const token = jwt.sign(
+      { fullname, email, password, age, gender, education, experience },
+      process.env.ACCTIVATION_KEY
+    );
 
-    const salt = await bcrypt.genSalt(10);
-    createdUser.password = await bcrypt.hash(createdUser.password, salt);
-
-    await createdUser.save();
-    const response = { fullname, email };
-    res.status(200).send({ message: "Registered User", response });
+    const data = {
+      to: email,
+      from: 'fisayo@foodcrowdy.com',
+      subject: 'Email Activation',
+      html: `<h2> Please Click on this link to verify your email </h2>
+      <p> Click on this <a href = "http://localhost:7000/authentication/activate/${token}">link </a>to reset password</p>
+      `,
+    };
+    transporter.sendMail(data, function (error, body) {
+      if (error) {
+        return res.send({ error: err.message });
+      }
+      return res.send({
+        message: 'Email has been sent, kindly activate your email',
+      });
+    });
   })
 );
 
 router.post(
-  "/login",
+  '/authentication/activate',
+  asyncMiddleware(async (req, res) => {
+    const { token } = req.body;
+    if (token) {
+      const decodedToken = jwt.verify(token, process.env.ACCTIVATION_KEY);
+      const {
+        fullname,
+        email,
+        password,
+        age,
+        gender,
+        education,
+        experience,
+      } = decodedToken;
+      const user = await User.findOne({ email });
+      if (user) return res.status(400).send('User already registered');
+      const createdUser = new User({
+        fullname,
+        email,
+        password,
+        age,
+        gender,
+        education,
+        experience,
+      });
+
+      const salt = await bcrypt.genSalt(10);
+      createdUser.password = await bcrypt.hash(createdUser.password, salt);
+
+      const savedUser = await createdUser.save();
+      if (savedUser) {
+        const data = {
+          to: email,
+          from: 'fisayo@foodcrowdy.com',
+          subject: 'Confirmation Email',
+          html: `<p> Welcome to E-commerce Website, Do proceed to the <a href = "https://${req.headers.host}/login">Login Page</a></p>`,
+        };
+        transporter.sendMail(data);
+      }
+      const response = { fullname, email };
+      res.status(200).send({ message: 'Registered User', response });
+    } else {
+      return res.send({ error: 'Something went wrong' });
+    }
+  })
+);
+
+router.post(
+  '/login',
   asyncMiddleware(async (req, res) => {
     const { error } = loginvalidate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).send("username or password not found ");
+    if (!user) return res.status(404).send('username or password not found ');
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword)
-      return res.status(404).send("username or password not found ");
+      return res.status(404).send('username or password not found ');
 
     const token = user.generateAuthToken();
-    res.header("x-auth-token", token);
+    res.header('x-auth-token', token);
     const response = { email, token };
-    res.send({ message: "Login Successful", response });
+    res.send({ message: 'Login Successful', response });
   })
 );
 
 router.post(
-  "/forgotpassword",
+  '/forgotpassword',
   asyncMiddleware(async (req, res) => {
     const { email } = req.body;
 
@@ -73,18 +142,17 @@ router.post(
       if (err || !user) {
         return res
           .status(400)
-          .json({ error: "User with this email does not exists" });
+          .send({ error: 'User with this email does not exists' });
       }
 
       const token = jwt.sign({ _id: user.id }, process.env.FORGOT_PASSWORD, {
-        expiresIn: "20m",
+        expiresIn: '20m',
       });
-      // const token = jwt.sign({ _id: user.id }, process.env.FORGOT_PASSWORD);
 
       const data = {
         to: email,
-        from: "fisayo@foodcrowdy.com",
-        subject: "Password reset",
+        from: 'fisayo@foodcrowdy.com',
+        subject: 'Password reset',
         html: `
         <h1> You requested for password reset</h1>
         <p> Click on this <a href = "http://localhost:7000/forgotpassword/${token}">link </a>to reset password</p>
@@ -93,12 +161,12 @@ router.post(
 
       return user.updateOne({ resetLink: token }, function (err, sucess) {
         if (err) {
-          return res.status(400).json({ error: "reset password link error" });
+          return res.status(400).json({ error: 'reset password link error' });
         } else {
           transporter.sendMail(data);
         }
-        return res.json({
-          message: "Email has been sent, kindly follow the instructions",
+        return res.send({
+          message: 'Email has been sent, kindly follow the instructions',
         });
       });
     });
@@ -106,30 +174,30 @@ router.post(
 );
 
 router.post(
-  "/newpassword",
+  '/newpassword',
   asyncMiddleware(async (req, res) => {
     const { Link, newPass } = req.body;
     let user = await User.findOne({ resetLink: Link });
-    if (!user) return res.status(422).json({ error: "Try again" });
+    if (!user) return res.status(422).json({ error: 'Try again' });
 
     const hashedpassword = await bcrypt.hash(newPass, 12);
     if (hashedpassword) {
       user.password = hashedpassword;
-      user.resetLink = "";
+      user.resetLink = '';
     }
     user.save();
-    res.json({ message: "password updated" });
+    res.send({ message: 'password updated' });
   })
 );
 
 router.get(
-  "/profile/:id",
+  '/profile/:id',
   auth,
   asyncMiddleware(async (req, res) => {
     const userProfile = await User.findOne({ _id: req.params.id }).select(
-      "-password -_id"
+      '-password -_id'
     );
-    res.json(userProfile);
+    res.send(userProfile);
   })
 );
 
