@@ -204,7 +204,7 @@ router.get(
     const userProfile = await User.findOne({ _id: req.params.id }).select(
       '-password -_id'
     );
-    res.send({ userProfile });
+    res.send(userProfile);
   })
 );
 
