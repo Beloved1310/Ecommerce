@@ -13,7 +13,7 @@ const upload = multer({ storage });
 // ...........get all Products..........
 router.get('/', async (req, res) => {
   const products = await Product.find();
-  res.send({ products });
+  res.send(products);
 });
 
 // ...........get one Product .......
@@ -26,7 +26,7 @@ router.get(
       'fullname email -_id'
     );
     if (product) {
-      res.send({ product });
+      res.send(product);
     } else {
       res.status(404).send({ message: 'Product Not Found' });
     }
@@ -53,7 +53,7 @@ router.post(
       user: req.user._id,
     });
 
-    res.send({ createdProduct });
+    res.send( createdProduct );
   })
 );
 
