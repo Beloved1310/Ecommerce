@@ -25,7 +25,7 @@ router.post(
   '/signup',
   asyncMiddleware(async (req, res) => {
     const { error } = validate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send({ error: error.details[0].message });
 
     const {
       fullname,
@@ -38,7 +38,8 @@ router.post(
     } = req.body;
 
     const user = await User.findOne({ email });
-    if (user) return res.status(400).send('User already registered');
+    if (user)
+      return res.status(400).send({ message: 'User already registered' });
 
     const token = jwt.sign(
       { fullname, email, password, age, gender, education, experience },
@@ -80,7 +81,8 @@ router.post(
         experience,
       } = decodedToken;
       const user = await User.findOne({ email });
-      if (user) return res.status(400).send('User already registered');
+      if (user)
+        return res.status(400).send({ message: 'User already registered' });
       const createdUser = new User({
         fullname,
         email,
@@ -116,15 +118,20 @@ router.post(
   '/login',
   asyncMiddleware(async (req, res) => {
     const { error } = loginvalidate(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send({ error: error.details[0].message });
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
-    if (!user) return res.status(404).send('username or password not found ');
+    if (!user)
+      return res
+        .status(404)
+        .send({ message: 'username or password not found' });
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword)
-      return res.status(404).send('username or password not found ');
+      return res
+        .status(404)
+        .send({ message: 'username or password not found ' });
 
     const token = user.generateAuthToken();
     res.header('x-auth-token', token);
@@ -178,7 +185,7 @@ router.post(
   asyncMiddleware(async (req, res) => {
     const { Link, newPass } = req.body;
     let user = await User.findOne({ resetLink: Link });
-    if (!user) return res.status(422).send({ error: 'Try again' });
+    if (!user) return res.status(422).send({ error: 'Try Again' });
 
     const hashedpassword = await bcrypt.hash(newPass, 12);
     if (hashedpassword) {
@@ -186,7 +193,7 @@ router.post(
       user.resetLink = '';
     }
     user.save();
-    res.send({ message: 'password updated' });
+    res.send({ message: 'Password Updated' });
   })
 );
 
@@ -197,9 +204,8 @@ router.get(
     const userProfile = await User.findOne({ _id: req.params.id }).select(
       '-password -_id'
     );
-    res.send(userProfile);
+    res.send({ userProfile });
   })
 );
 
 module.exports = router;
-
