@@ -60,6 +60,7 @@ router.post(
       }
       return res.send({
         message: 'Email has been sent, kindly activate your email',
+        user
       });
     });
   })
@@ -172,8 +173,9 @@ router.post(
         } else {
           transporter.sendMail(data);
         }
+        const response = { email};
         return res.send({
-          message: 'Email has been sent, kindly follow the instructions',
+          message: 'Email has been sent, kindly follow the instructions', response
         });
       });
     });
@@ -193,7 +195,8 @@ router.post(
       user.resetLink = '';
     }
     user.save();
-    res.send({ message: 'Password Updated' });
+    const response = { newPass };
+    res.send({ message: 'Password Updated', response });
   })
 );
 
@@ -204,7 +207,7 @@ router.get(
     const userProfile = await User.findOne({ _id: req.params.id }).select(
       '-password -_id'
     );
-    res.send(userProfile);
+    res.send({message: 'Profile', userProfile});
   })
 );
 

@@ -13,7 +13,7 @@ const upload = multer({ storage });
 // ...........get all Products..........
 router.get('/', async (req, res) => {
   const products = await Product.find();
-  res.send(products);
+  res.send({message: 'Product List', products});
 });
 
 // ...........get one Product .......
@@ -26,7 +26,7 @@ router.get(
       'fullname email -_id'
     );
     if (product) {
-      res.send(product);
+      res.send({message : 'Product', product});
     } else {
       res.status(404).send({ message: 'Product Not Found' });
     }
@@ -53,7 +53,7 @@ router.post(
       user: req.user._id,
     });
 
-    res.send( createdProduct );
+    res.send({message : '', createdProduct });
   })
 );
 
@@ -68,7 +68,7 @@ router.put(
       public_id: cloudinary_id,
     } = await cloudinary.uploader.upload(req.file.path);
     const { name, price, quantity } = req.body;
-    await Product.updateOne(
+     await Product.updateOne(
       { _id: req.params.id },
       {
         $set: {
@@ -80,7 +80,8 @@ router.put(
         },
       }
     );
-    res.status(200).json({ message: 'Updated!' });
+    const updatedProduct = await Product.find({ _id: req.params.id})
+    res.status(200).json({ message: 'Updated!', updatedProduct });
   })
 );
 
