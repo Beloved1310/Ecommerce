@@ -16,7 +16,7 @@ router.get(
   asyncMiddleware(async (req, res) => {
     const order = await Order.findById(req.params.id).populate('product');
     if (order) {
-      res.send({order});
+      res.send(order);
     } else {
       res.status(404).send({ message: 'Order Not Found' });
     }
@@ -33,7 +33,7 @@ router.get(
       'user',
       'fullname email -_id'
     );
-    res.send({orders});
+    res.send(orders);
   })
 );
 
@@ -123,7 +123,7 @@ router.post(
         message,
         data,
       });
-      res.send({createdWebhook});
+      res.send(createdWebhook);
     }
   })
 );
@@ -145,9 +145,9 @@ router.get(
 
     if (response.data.status == 'success') {
       await Order.updateOne({}, { isPaid: true });
-      res.send({ response: response.data, order: 'Paid' });
+      res.send({response: response.data, order: 'Paid' });
     } else {
-      res.send({error});
+      res.send(error);
     }
   })
 );
