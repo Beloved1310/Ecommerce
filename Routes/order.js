@@ -14,9 +14,9 @@ router.get(
   '/order/:id',
   auth,
   asyncMiddleware(async (req, res) => {
-    const order = await Order.findById(req.params.id).populate('product');
-    if (order) {
-      res.send({message: '', order});
+    const data = await Order.findById(req.params.id).populate('product');
+    if (data) {
+      res.send({ message: 'Order', data });
     } else {
       res.status(404).send({ message: 'Order Not Found' });
     }
@@ -29,11 +29,11 @@ router.get(
   '/order/user/mine',
   auth,
   asyncMiddleware(async (req, res) => {
-    const orders = await Order.find({ user: req.user._id }).populate(
+    const data = await Order.find({ user: req.user._id }).populate(
       'user',
       'fullname email -_id'
     );
-    res.send({message: 'Order Made', orders});
+    res.send({ message: 'Order Made', data });
   })
 );
 
@@ -77,35 +77,14 @@ router.post(
         user: req.user._id,
       });
       const createdOrder = await order.save();
-
-      res.status(201).send({
-        message: 'New Order Created',
+      const data = {
         order: createdOrder._id,
         responseLink,
+      };
+      res.status(201).send({
+        message: 'New Order Created',
+        data,
       });
-    }
-  })
-);
-
-router.post(
-  '/initialise/payment',
-  auth,
-  asyncMiddleware(async (req, res) => {
-    const headers = {
-      authorization: process.env.SECRET_KEY,
-      'content-type': 'application/json',
-      'cache-control': 'no-cache',
-    };
-
-    const response = await axios.post(
-      'https://api.flutterwave.com/v3/payments',
-      req.body,
-      { headers }
-    );
-    if (response) {
-      res.send(response.data);
-    } else {
-      res.send(error);
     }
   })
 );
@@ -123,7 +102,7 @@ router.post(
         message,
         data,
       });
-      res.send({message: 'Transaction Stored', createdWebhook});
+      res.send({ message: 'Transaction Stored', data: createdWebhook });
     }
   })
 );
@@ -145,7 +124,7 @@ router.get(
 
     if (response.data.status == 'success') {
       await Order.updateOne({}, { isPaid: true });
-      res.send({message: 'Paid', response: response.data });
+      res.send({ message: 'Paid', data: response.data });
     } else {
       res.send(error);
     }
