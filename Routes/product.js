@@ -12,8 +12,8 @@ const upload = multer({ storage });
 
 // ...........get all Products..........
 router.get('/', async (req, res) => {
-  const products = await Product.find();
-  res.json(products);
+  const data = await Product.find();
+  res.send({ message: 'Products', data });
 });
 
 // ...........get one Product .......
@@ -21,12 +21,12 @@ router.get('/', async (req, res) => {
 router.get(
   '/:id',
   asyncMiddleware(async (req, res) => {
-    const product = await Product.findById(req.params.id).populate(
+    const data = await Product.findById(req.params.id).populate(
       'user',
       'fullname email -_id'
     );
-    if (product) {
-      res.json(product);
+    if (data) {
+      res.send({ message: 'Product', data });
     } else {
       res.status(404).send({ message: 'Product Not Found' });
     }
@@ -44,7 +44,7 @@ router.post(
       secure_url: image,
       public_id: cloudinary_id,
     } = await cloudinary.uploader.upload(req.file.path);
-    const createdProduct = await Product.create({
+    const data = await Product.create({
       image,
       cloudinary_id,
       name,
@@ -53,7 +53,7 @@ router.post(
       user: req.user._id,
     });
 
-    res.json(createdProduct);
+    res.send({ message: 'Created Product', data });
   })
 );
 
@@ -80,7 +80,8 @@ router.put(
         },
       }
     );
-    res.status(200).json({ message: 'Updated!' });
+    const data = await Product.find({ _id: req.params.id });
+    res.status(200).json({ message: 'Product updated', data });
   })
 );
 
