@@ -58,9 +58,10 @@ router.post(
       if (error) {
         return res.send({ error: err.message });
       }
+      const data = { user };
       return res.send({
         message: 'Email has been sent, kindly activate your email',
-        user
+        data,
       });
     });
   })
@@ -107,8 +108,8 @@ router.post(
         };
         transporter.sendMail(data);
       }
-      const response = { fullname, email };
-      res.status(200).send({ message: 'Registered User', response });
+      const data = { fullname, email };
+      res.status(200).send({ message: 'Registered User', data });
     } else {
       return res.send({ error: 'Something went wrong' });
     }
@@ -136,8 +137,8 @@ router.post(
 
     const token = user.generateAuthToken();
     res.header('x-auth-token', token);
-    const response = { email, token };
-    res.send({ message: 'Login Successful', response });
+    const data = { email, token };
+    res.send({ message: 'Login Successful', data });
   })
 );
 
@@ -157,7 +158,7 @@ router.post(
         expiresIn: '20m',
       });
 
-      const data = {
+      const mailData = {
         to: email,
         from: 'fisayo@foodcrowdy.com',
         subject: 'Password reset',
@@ -171,11 +172,12 @@ router.post(
         if (err) {
           return res.status(400).send({ error: 'reset password link error' });
         } else {
-          transporter.sendMail(data);
+          transporter.sendMail(mailData);
         }
-        const response = { email};
+        const data = { email };
         return res.send({
-          message: 'Email has been sent, kindly follow the instructions', response
+          message: 'Email has been sent, kindly follow the instructions',
+          data,
         });
       });
     });
@@ -195,8 +197,8 @@ router.post(
       user.resetLink = '';
     }
     user.save();
-    const response = { newPass };
-    res.send({ message: 'Password Updated', response });
+    const data = { newPass };
+    res.send({ message: 'Password Updated', data });
   })
 );
 
@@ -204,10 +206,10 @@ router.get(
   '/profile/:id',
   auth,
   asyncMiddleware(async (req, res) => {
-    const userProfile = await User.findOne({ _id: req.params.id }).select(
+    const data = await User.findOne({ _id: req.params.id }).select(
       '-password -_id'
     );
-    res.send({message: 'Profile', userProfile});
+    res.send({ message: 'Profile', data });
   })
 );
 
