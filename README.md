@@ -18,19 +18,19 @@ This Project is an Application Programming Interface for an E-commerce Website. 
   * Open your Visual Studio code or any Intergrated Development Environment (IDE)
   * Run 'npm install' on your terminal to run all dependecies
   * Open a .env file in your root folder
-  * Write these are the Environment Variable you need in your  .env file.
-    *  mongodb connection string
-    * JWT key
-    * Email Secret key from SendGrid
-    * debug key
-    * forget password key
-    * Cloudinary name
-    * Cloudinary api key
-    * Cloudinary secret key
-    * Flutterwave secret key
-    * Flutterwave public key
-    * Webhook hash key
-    * Email activation key
+  * Write these as the Environment Variable you need in your .env file.
+    *  MONGODBURI 
+    * JWT_KEY 
+    * SEND_EMAIL
+    * debug
+    * FORGOT_PASSWORD
+    * CLOUDINARY_CLOUD_NAME
+    * CLOUDINARY_API_KEY 
+    * CLOUDINARY_API_SECRET
+    * SECRET_KEY 
+    * PUBLIC_KEY
+    * MY_HASH
+    * ACCTIVATION_KEY 
 * Run your application on PostMan or you can Host on Heroku
 * Congratulations on your sucessful Installation 🎉
   
