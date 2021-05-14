@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
 const debug = require('debug')('app');
+const { MONGODBURI } = require('../config');
 
 module.exports = async () => {
-  const mongooseConnect = await mongoose.connect(process.env.MONGODBURI, {
+  const mongooseConnect = await mongoose.connect(MONGODBURI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
