@@ -1,13 +1,14 @@
-const asyncMiddleware = require('../middleware/async');
+const mongoose = require('mongoose');
+const axios = require('axios');
 const express = require('express');
+const asyncMiddleware = require('../middleware/async');
+
+const router = express.Router();
+const { SECRET_KEY, SECRETKEY, MY_HASH } = require('../config');
 const Payment = require('../Model/Payment');
 const Product = require('../Model/Products');
 const Order = require('../Model/Order');
 const auth = require('../middleware/auth');
-const router = express.Router();
-const mongoose = require('mongoose');
-
-const axios = require('axios');
 
 // ....................pass order id
 router.get(
@@ -23,8 +24,8 @@ router.get(
   })
 );
 
-//...................pass user token
-//...................see my purchase product
+// ...................pass user token
+// ...................see my purchase product
 router.get(
   '/order/user/mine',
   auth,
@@ -42,7 +43,7 @@ router.post(
   auth,
   asyncMiddleware(async (req, res) => {
     const headers = {
-      authorization: process.env.SECRET_KEY,
+      authorization: SECRET_KEY,
       'content-type': 'application/json',
       'cache-control': 'no-cache',
     };
@@ -92,8 +93,8 @@ router.post(
 router.post(
   '/webhook/details',
   asyncMiddleware(async (req, res) => {
-    var hash = req.headers['verify-hash'];
-    if (hash !== process.env.MY_HASH) {
+    const hash = req.headers['verify-hash'];
+    if (hash !== MY_HASH) {
       res.send(401, 'Unauthorized User');
     } else {
       const { data, status, message } = req.body;
@@ -110,23 +111,21 @@ router.post(
 router.get(
   '/verify/flutterwave/verify/:ref',
   asyncMiddleware(async (req, res) => {
-    const ref = req.params.ref;
+    const {ref} = req.params;
     const response = await axios.get(
       `https://api.flutterwave.com/v3/transactions/${ref}/verify/`,
       {
         headers: {
-          authorization: process.env.SECRET_KEY,
+          authorization: SECRETKEY,
           'content-type': 'application/json',
           'cache-control': 'no-cache',
         },
       }
     );
 
-    if (response.data.status == 'success') {
+    if (response.data.status === 'success') {
       await Order.updateOne({}, { isPaid: true });
       res.send({ message: 'Paid', data: response.data });
-    } else {
-      res.send(error);
     }
   })
 );
