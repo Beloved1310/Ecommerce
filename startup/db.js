@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const debug = require('debug')('app');
+
 const { MONGODBURI } = require('../config');
 
 module.exports = async () => {
