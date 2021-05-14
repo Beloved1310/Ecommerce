@@ -126,6 +126,8 @@ router.get(
     if (response.data.status === 'success') {
       await Order.updateOne({}, { isPaid: true });
       res.send({ message: 'Paid', data: response.data });
+    } else {
+      res.send({ message: 'Transaction not Verified' });
     }
   })
 );
