@@ -1,0 +1,22 @@
+const dotenv = require('dotenv');
+
+dotenv.config();
+const { env } = process;
+
+module.exports = {
+  JWT: env.JWT_KEY,
+  CLOUDINARY_CLOUD_NAME: env.CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_API_KEY: env.CLOUDINARY_API_KEY,
+  CLOUDINARY_API_SECRET: env.CLOUDINARY_API_SECRET,
+  Port: env.PORT,
+  MONGODBURI: env.MONGODBURI,
+  SEND_EMAIL: env.SEND_EMAIL,
+  FORGOT_PASSWORD: env.FORGOT_PASSWORD,
+  PUBLIC_KEY: env.PUBLIC_KEY,
+  MY_HASH: env.MY_HASH,
+  ACCTIVATION_KEY: env.ACCTIVATION_KEY,
+  ACTIVATION_KEY: env.ACCTIVATION_KEY,
+  debug: env.debug,
+  SECRET_KEY: env.SECRET_KEY,
+  SECRETKEY: env.SECRET_KEY,
+};

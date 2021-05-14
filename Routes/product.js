@@ -1,7 +1,10 @@
-const asyncMiddleware = require('../middleware/async');
-const express = require('express');
-const router = express.Router();
+/* eslint-disable camelcase */
+
 const multer = require('multer');
+const express = require('express');
+const asyncMiddleware = require('../middleware/async');
+
+const router = express.Router();
 
 const auth = require('../middleware/auth');
 const Product = require('../Model/Products');
