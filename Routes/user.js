@@ -1,22 +1,27 @@
 /* eslint consistent-return: "off" */
-const asyncMiddleware = require('../middleware/async');
 const express = require('express');
 const bcrypt = require('bcrypt');
-const User = require('../Model/User');
-const auth = require('../middleware/auth');
 const jwt = require('jsonwebtoken');
-
-const router = express.Router();
-
-const validate = require('../validation/signupValidation');
-const loginvalidate = require('../validation/loginValidate');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
+const asyncMiddleware = require('../middleware/async');
+const User = require('../Model/User');
+const auth = require('../middleware/auth');
+
+const router = express.Router();
+const {
+  SEND_EMAIL,
+  FORGOT_PASSWORD,
+  ACCTIVATION_KEY,
+  ACTIVATION_KEY,
+} = require('../config');
+const validate = require('../validation/signupValidation');
+const loginvalidate = require('../validation/loginValidate');
 
 const transporter = nodemailer.createTransport(
   sendgridTransport({
     auth: {
-      api_key: process.env.SEND_EMAIL,
+      api_key: SEND_EMAIL,
     },
   })
 );
@@ -43,10 +48,10 @@ router.post(
 
     const token = jwt.sign(
       { fullname, email, password, age, gender, education, experience },
-      process.env.ACCTIVATION_KEY
+      ACTIVATION_KEY
     );
 
-    const data = {
+    const emailData = {
       to: email,
       from: 'fisayo@foodcrowdy.com',
       subject: 'Email Activation',
@@ -54,9 +59,9 @@ router.post(
       <p> Click on this <a href = "http://localhost:7000/authentication/activate/${token}">link </a>to reset password</p>
       `,
     };
-    transporter.sendMail(data, function (error, body) {
-      if (error) {
-        return res.send({ error: err.message });
+    transporter.sendMail(emailData, (ex) => {
+      if (ex) {
+        return res.send({ ex: ex.message });
       }
       const data = { user };
       return res.send({
@@ -72,7 +77,7 @@ router.post(
   asyncMiddleware(async (req, res) => {
     const { token } = req.body;
     if (token) {
-      const decodedToken = jwt.verify(token, process.env.ACCTIVATION_KEY);
+      const decodedToken = jwt.verify(token, ACCTIVATION_KEY);
       const {
         fullname,
         email,
@@ -154,7 +159,7 @@ router.post(
           .send({ error: 'User with this email does not exists' });
       }
 
-      const token = jwt.sign({ _id: user.id }, process.env.FORGOT_PASSWORD, {
+      const token = jwt.sign({ _id: user.id }, FORGOT_PASSWORD, {
         expiresIn: '20m',
       });
 
@@ -168,12 +173,12 @@ router.post(
         `,
       };
 
-      return user.updateOne({ resetLink: token }, function (err, sucess) {
-        if (err) {
+      return user.updateOne({ resetLink: token }, (error) => {
+        if (error) {
           return res.status(400).send({ error: 'reset password link error' });
-        } else {
+        } 
           transporter.sendMail(mailData);
-        }
+        
         const data = { email };
         return res.send({
           message: 'Email has been sent, kindly follow the instructions',
@@ -188,7 +193,7 @@ router.post(
   '/newpassword',
   asyncMiddleware(async (req, res) => {
     const { Link, newPass } = req.body;
-    let user = await User.findOne({ resetLink: Link });
+    const user = await User.findOne({ resetLink: Link });
     if (!user) return res.status(422).send({ error: 'Try Again' });
 
     const hashedpassword = await bcrypt.hash(newPass, 12);
