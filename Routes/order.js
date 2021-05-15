@@ -1,3 +1,5 @@
+/* eslint consistent-return: "off" */
+
 const mongoose = require('mongoose');
 const axios = require('axios');
 const express = require('express');
@@ -9,6 +11,9 @@ const Payment = require('../Model/Payment');
 const Product = require('../Model/Products');
 const Order = require('../Model/Order');
 const auth = require('../middleware/auth');
+
+const newOrder = require('../validation/newOrder');
+const Webhook = require('../validation/Webhook');
 
 // ....................pass order id
 router.get(
@@ -53,6 +58,8 @@ router.post(
       { headers }
     );
     const responseLink = response.data;
+    const { error } = newOrder(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
     const {
       shippingAddress,
       paymentMethod,
@@ -93,6 +100,8 @@ router.post(
 router.post(
   '/webhook/details',
   asyncMiddleware(async (req, res) => {
+    const { error } = Webhook(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
     const hash = req.headers['verify-hash'];
     if (hash !== MY_HASH) {
       res.send(401, 'Unauthorized User');
@@ -111,7 +120,7 @@ router.post(
 router.get(
   '/verify/flutterwave/verify/:ref',
   asyncMiddleware(async (req, res) => {
-    const {ref} = req.params;
+    const { ref } = req.params;
     const response = await axios.get(
       `https://api.flutterwave.com/v3/transactions/${ref}/verify/`,
       {
