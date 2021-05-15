@@ -1,4 +1,5 @@
 /* eslint-disable camelcase */
+/* eslint consistent-return: "off" */
 
 const multer = require('multer');
 const express = require('express');
@@ -12,6 +13,8 @@ const cloudinary = require('../utilis/cloudinary');
 const storage = require('../utilis/multer');
 
 const upload = multer({ storage });
+
+const newProduct = require('../validation/newProduct');
 
 // ...........get all Products..........
 router.get('/', async (req, res) => {
@@ -41,6 +44,8 @@ router.post(
   auth,
   upload.single('image'),
   asyncMiddleware(async (req, res) => {
+    const { error } = newProduct(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
     const { name, price, quantity } = req.body;
 
     const {
@@ -64,6 +69,8 @@ router.put(
   '/product/:id',
   upload.single('image'),
   asyncMiddleware(async (req, res) => {
+    const { error } = newProduct(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
     const product = await Product.findById(req.params.id);
     await cloudinary.uploader.destroy(product.cloudinary_id);
     const {
