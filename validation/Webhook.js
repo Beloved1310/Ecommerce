@@ -12,7 +12,7 @@ module.exports = function validate(req) {
       created_at: Joi.date().required(),
 
       customer: Joi.object().keys({
-        id: Joi.number(),
+        id: Joi.number().required(),
         name: Joi.string().min(5).label('First Name').required(),
         email: Joi.string().email().min(3).max(300).required(),
       }),
