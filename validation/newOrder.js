@@ -3,7 +3,7 @@ const Joi = require('joi');
 module.exports = function validate(req) {
   const schema = Joi.object({
     shippingAddress: Joi.object().keys({
-      address: Joi.alternatives().try(Joi.string()),
+      address: Joi.string().alphanum().min(3).max(30).required(),
       city: Joi.alternatives().try(Joi.string()),
       postalCode: Joi.alternatives().try(Joi.string()),
       country: Joi.alternatives().try(Joi.string()),
