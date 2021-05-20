@@ -1,4 +1,5 @@
 /* eslint consistent-return: "off" */
+
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -17,6 +18,9 @@ const {
 } = require('../config');
 const validate = require('../validation/signupValidation');
 const loginvalidate = require('../validation/loginValidate');
+const forgetpassword = require('../validation/forgetPassword');
+const newpassword = require('../validation/newPassword');
+const activatePassword = require('../validation/activatePassword');
 
 const transporter = nodemailer.createTransport(
   sendgridTransport({
@@ -75,6 +79,8 @@ router.post(
 router.post(
   '/authentication/activate',
   asyncMiddleware(async (req, res) => {
+    const { error } = activatePassword(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
     const { token } = req.body;
     if (token) {
       const decodedToken = jwt.verify(token, ACCTIVATION_KEY);
@@ -150,10 +156,12 @@ router.post(
 router.post(
   '/forgotpassword',
   asyncMiddleware(async (req, res) => {
+    const { error } = forgetpassword(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
     const { email } = req.body;
 
     await User.findOne({ email }, (err, user) => {
-      if (err || !user) {
+      if (!user) {
         return res
           .status(400)
           .send({ error: 'User with this email does not exists' });
@@ -173,12 +181,12 @@ router.post(
         `,
       };
 
-      return user.updateOne({ resetLink: token }, (error) => {
-        if (error) {
+      return user.updateOne({ resetLink: token }, (ex) => {
+        if (ex) {
           return res.status(400).send({ error: 'reset password link error' });
-        } 
-          transporter.sendMail(mailData);
-        
+        }
+        transporter.sendMail(mailData);
+
         const data = { email };
         return res.send({
           message: 'Email has been sent, kindly follow the instructions',
@@ -192,6 +200,8 @@ router.post(
 router.post(
   '/newpassword',
   asyncMiddleware(async (req, res) => {
+    const { error } = newpassword(req.body);
+    if (error) return res.status(400).send({ error: error.details[0].message });
     const { Link, newPass } = req.body;
     const user = await User.findOne({ resetLink: Link });
     if (!user) return res.status(422).send({ error: 'Try Again' });
