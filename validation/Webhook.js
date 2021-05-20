@@ -6,10 +6,10 @@ module.exports = function validate(req) {
     message: Joi.string().min(3).max(300).required(),
 
     data: Joi.object().keys({
-      id: Joi.number(),
-      amount: Joi.number(),
-      currency: Joi.string(),
-      created_at: Joi.date(),
+      id: Joi.number().required(),
+      amount: Joi.number().required(),
+      currency: Joi.string().required(),
+      created_at: Joi.date().required(),
 
       customer: Joi.object().keys({
         id: Joi.number(),
