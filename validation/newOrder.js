@@ -2,16 +2,31 @@ const Joi = require('joi');
 
 module.exports = function validate(req) {
   const schema = Joi.object({
-    shippingAddress: Joi.object().keys({
-      address: Joi.string().alphanum().min(3).max(30).required(),
-      city: Joi.alternatives().try(Joi.string()),
-      postalCode: Joi.alternatives().try(Joi.string()),
-      country: Joi.alternatives().try(Joi.string()),
-    }),
+    productId: Joi.string().required(),
+    tx_ref: Joi.string().required(),
+    currency: Joi.string().required(),
+    amount: Joi.number().valid(Joi.in('totalPrice')),
+    redirect_url: Joi.string().required(),
+    payment_options: Joi.string().required(),
+    customer: Joi.object()
+      .keys({
+        email: Joi.string(),
+        phonenumber: Joi.number(),
+        name: Joi.string(),
+      })
+      .and('email'),
+    shippingAddress: Joi.object()
+      .keys({
+        address: Joi.string().min(3).max(30).required(),
+        city: Joi.any(),
+        postalCode: Joi.any(),
+        country: Joi.any(),
+      })
+      .and('address'),
     paymentMethod: Joi.string().required(),
     itemsPrice: Joi.number().required(),
-    shippingPrice: Joi.string().required(),
-    taxPrice: Joi.string().required(),
+    shippingPrice: Joi.number().required(),
+    taxPrice: Joi.number().required(),
     totalPrice: Joi.number().required(),
   });
   return schema.validate(req);

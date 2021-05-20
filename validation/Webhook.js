@@ -6,15 +6,15 @@ module.exports = function validate(req) {
     message: Joi.string().min(3).max(300).required(),
 
     data: Joi.object().keys({
-      id: Joi.alternatives().try(Joi.number()),
-      amount: Joi.alternatives().try(Joi.number()),
-      currency: Joi.alternatives().try(Joi.string()),
-      created_at: Joi.alternatives().try(Joi.string()),
+      id: Joi.number(),
+      amount: Joi.mumber(),
+      currency: Joi.number,
+      created_at: Joi.date(),
 
       customer: Joi.object().keys({
         id: Joi.alternatives().try(Joi.number()),
-        name: Joi.alternatives().try(Joi.string()),
-        email: Joi.alternatives().try(Joi.string()),
+        name: Joi.string().min(5).label('First Name').required(),
+        email: Joi.email().min(3).max(300).required(),
       }),
     }),
   });
