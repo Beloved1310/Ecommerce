@@ -7,14 +7,14 @@ module.exports = function validate(req) {
 
     data: Joi.object().keys({
       id: Joi.number(),
-      amount: Joi.mumber(),
-      currency: Joi.number,
+      amount: Joi.number(),
+      currency: Joi.string(),
       created_at: Joi.date(),
 
       customer: Joi.object().keys({
-        id: Joi.alternatives().try(Joi.number()),
+        id: Joi.number(),
         name: Joi.string().min(5).label('First Name').required(),
-        email: Joi.email().min(3).max(300).required(),
+        email: Joi.string().email().min(3).max(300).required(),
       }),
     }),
   });
