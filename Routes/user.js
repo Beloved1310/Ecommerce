@@ -39,11 +39,6 @@ router.post(
     const { error } = validate(req.body);
     if (error) return res.status(400).send({ error: error.details[0].message });
 
-    const user = await User.findOne().select('email');
-    if (user) {
-      res.status(400).send({ message: 'User already registered' });
-    }
-
     const { fullname, email, password, gender } = req.body;
 
     const createdUser = new User({
@@ -52,27 +47,32 @@ router.post(
       password,
       gender,
     });
-    const salt = await bcrypt.genSalt(10);
-    createdUser.password = await bcrypt.hash(createdUser.password, salt);
-    const savedUser = await createdUser.save();
 
-    if (savedUser) {
-      const token = jwt.sign({ email }, ACTIVATION_KEY);
+    const user = await User.findOne({ email });
+    if (user) {
+      res.status(400).send({ error: 'User already registered' });
+    } else {
+      const salt = await bcrypt.genSalt(10);
+      createdUser.password = await bcrypt.hash(createdUser.password, salt);
+      const savedUser = await createdUser.save();
+      if (savedUser) {
+        const token = jwt.sign({ email }, ACTIVATION_KEY);
+        const sendEmail = await transporter.sendMail(
+          emailData(email, token, req)
+        );
 
-      const sendEmail = await transporter.sendMail(
-        emailData(email, token, req)
-      );
-      if (!sendEmail) {
-        res.send({ error: error.message });
-      } else {
-        const data = {
-          fullname,
-          email,
-        };
-        return res.send({
-          message: 'Email has been sent, kindly activate your email',
-          data,
-        });
+        if (!sendEmail) {
+          res.send({ error: error.message });
+        } else {
+          const data = {
+            fullname,
+            email,
+          };
+          return res.send({
+            message: 'Email has been sent, kindly activate your email',
+            data,
+          });
+        }
       }
     }
   })
@@ -134,10 +134,10 @@ router.post(
         .status(400)
         .send({ error: 'User with this email does not exists' });
     }
-    const token = jwt.sign({ _id: user.id }, FORGOT_PASSWORD, {
+    const token = jwt.sign({ _id: user._id }, FORGOT_PASSWORD, {
       expiresIn: '20m',
     });
-    const update = await user.updateOne({ resetLink: token });
+    const update = await User.updateOne({ resetLink: token });
     if (!update) {
       return res.status(400).send({ error: 'reset password link error' });
     }
@@ -158,7 +158,7 @@ router.post(
     if (error) return res.status(400).send({ error: error.details[0].message });
     const { Link, newPass } = req.body;
     const user = await User.findOne({ resetLink: Link });
-    if (!user) return res.send({ error: 'Try Again' });
+    if (!user) return res.status(422).send({ error: 'Try Again' });
 
     const hashedpassword = await bcrypt.hash(newPass, 12);
     if (hashedpassword) {
