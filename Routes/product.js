@@ -28,14 +28,11 @@ router.get(
   '/:id',
   asyncMiddleware(async (req, res) => {
     const data = await Product.findById(req.params.id).populate(
-      'user',
       'fullname email -_id'
     );
-    if (data) {
-      res.send({ message: 'Product', data });
-    } else {
-      res.status(404).send({ message: 'Product Not Found' });
-    }
+    if (!data) return res.status(404).send({ message: 'Product Not Found' });
+
+    res.send({ message: 'Product', data });
   })
 );
 
