@@ -30,7 +30,7 @@ router.get(
     const data = await Product.findById(req.params.id).populate(
       'fullname email -_id'
     );
-    if (!data) return res.status(404).send({ message: 'Product Not Found' });
+    if (!data) return res.status(404).send({ error: 'Product Not Found' });
 
     res.send({ message: 'Product', data });
   })
