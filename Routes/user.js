@@ -82,15 +82,11 @@ router.post(
 
     const user = await User.findOne({ email });
     if (!user)
-      return res
-        .status(404)
-        .send({ message: 'username or password not found' });
+      return res.status(404).send({ error: 'username or password not found' });
 
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword)
-      return res
-        .status(404)
-        .send({ message: 'username or password not found ' });
+      return res.status(404).send({ error: 'username or password not found ' });
 
     const token = user.generateAuthToken();
     res.header('x-auth-token', token);
