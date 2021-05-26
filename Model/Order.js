@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema(
   {
+    txf_ref: String,
+    mine: Array,
     _id: mongoose.Schema.Types.ObjectId,
     product: {
       type: mongoose.Schema.Types.ObjectId,
