@@ -15,6 +15,7 @@ const storage = require('../utilis/multer');
 const upload = multer({ storage });
 
 const newProduct = require('../validation/newProduct');
+const putproduct = require('../validation/putprodut');
 
 // ...........get all Products..........
 router.get('/', async (req, res) => {
@@ -49,7 +50,7 @@ router.post(
       secure_url: image,
       public_id: cloudinary_id,
     } = await cloudinary.uploader.upload(req.file.path);
-    const data = await Product.create({
+    await Product.create({
       image,
       cloudinary_id,
       name,
@@ -58,6 +59,13 @@ router.post(
       user: req.user._id,
     });
 
+    const data = {
+      image,
+      cloudinary_id,
+      name,
+      price,
+      quantity,
+    };
     res.send({ message: 'Created Product', data });
   })
 );
@@ -66,27 +74,38 @@ router.put(
   '/product/:id',
   upload.single('image'),
   asyncMiddleware(async (req, res) => {
-    const { error } = newProduct(req.body);
+    const { error } = putproduct(req.body);
     if (error) return res.status(400).send({ error: error.details[0].message });
     const product = await Product.findById(req.params.id);
-    await cloudinary.uploader.destroy(product.cloudinary_id);
-    const {
-      secure_url: image,
-      public_id: cloudinary_id,
-    } = await cloudinary.uploader.upload(req.file.path);
+    if (req.file) {
+      await cloudinary.uploader.destroy(product.cloudinary_id);
+      const {
+        secure_url: image,
+        public_id: cloudinary_id,
+      } = await cloudinary.uploader.upload(req.file.path);
+      await Product.updateOne(
+        { _id: req.params.id },
+        {
+          $set: {
+            image,
+            cloudinary_id,
+          },
+        }
+      );
+    }
+
     const { name, price, quantity } = req.body;
     await Product.updateOne(
       { _id: req.params.id },
       {
         $set: {
-          image,
-          cloudinary_id,
           name,
           price,
           quantity,
         },
       }
     );
+
     const data = await Product.find({ _id: req.params.id });
     res.status(200).json({ message: 'Product updated', data });
   })
