@@ -21,11 +21,9 @@ router.get(
   auth,
   asyncMiddleware(async (req, res) => {
     const data = await Order.findById(req.params.id).populate('product');
-    if (data) {
-      res.send({ message: 'Order', data });
-    } else {
-      res.status(404).send({ message: 'Order Not Found' });
-    }
+
+    if (!data) return res.status(404).send({ error: 'Order Not Found' });
+    res.send({ message: 'Order', data });
   })
 );
 
@@ -35,10 +33,22 @@ router.get(
   '/order/user/mine',
   auth,
   asyncMiddleware(async (req, res) => {
-    const data = await Order.find({ user: req.user._id }).populate(
+    const randomId = Math.random().toString(36).substring(2);
+    const mine = await Product.find({ user: req.user._id }).populate(
       'user',
       'fullname email -_id'
     );
+
+    const orderid = await Product.create({
+      _id: mongoose.Types.ObjectId(),
+      txf_ref: randomId,
+      mine,
+    });
+
+    const data = {
+      orderid,
+    };
+
     res.send({ message: 'Order Made', data });
   })
 );
@@ -59,6 +69,7 @@ router.post(
     );
     const responseLink = response.data;
     const { error } = newOrder(req.body);
+
     if (error) return res.status(400).send({ error: error.details[0].message });
     const {
       shippingAddress,
@@ -71,7 +82,7 @@ router.post(
 
     const existProduct = Product.findById(req.body.productId);
     if (!existProduct) {
-      res.status(404).send({ message: 'Product not found' });
+      res.status(404).send({ error: 'Product not found' });
     } else {
       const order = new Order({
         _id: mongoose.Types.ObjectId(),
@@ -103,17 +114,15 @@ router.post(
     const { error } = Webhook(req.body);
     if (error) return res.status(400).send({ error: error.details[0].message });
     const hash = req.headers['verify-hash'];
-    if (hash !== MY_HASH) {
-      res.send(401, 'Unauthorized User');
-    } else {
-      const { data, status, message } = req.body;
-      const createdWebhook = await Payment.create({
-        status,
-        message,
-        data,
-      });
-      res.send({ message: 'Transaction Stored', data: createdWebhook });
-    }
+    if (hash !== MY_HASH) return res.send(401, 'Unauthorized User');
+
+    const { data, status, message } = req.body;
+    const createdWebhook = await Payment.create({
+      status,
+      message,
+      data,
+    });
+    res.send({ message: 'Transaction Stored', data: createdWebhook });
   })
 );
 
@@ -131,13 +140,10 @@ router.get(
         },
       }
     );
-
-    if (response.data.status === 'success') {
-      await Order.updateOne({}, { isPaid: true });
-      res.send({ message: 'Paid', data: response.data });
-    } else {
-      res.send({ message: 'Transaction not Verified' });
-    }
+    if (response.data.status !== 'success')
+      return res.send({ message: 'Transaction not Verified' });
+    await Order.updateOne({}, { isPaid: true });
+    res.send({ message: 'Paid', data: response.data });
   })
 );
 
