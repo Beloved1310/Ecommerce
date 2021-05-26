@@ -39,7 +39,7 @@ router.get(
       'fullname email -_id'
     );
 
-    const orderid = await Product.create({
+    const orderid = await Order.create({
       _id: mongoose.Types.ObjectId(),
       txf_ref: randomId,
       mine,
