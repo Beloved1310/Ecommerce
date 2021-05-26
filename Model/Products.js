@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const ProductSchema = new mongoose.Schema(
   {
+    txf_ref: String,
+    mine: Array,
     image: {
       type: String,
     },
