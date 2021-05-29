@@ -2,26 +2,27 @@ const mongoose = require('mongoose');
 
 const OrderSchema = new mongoose.Schema(
   {
-    txf_ref: String,
-    mine: Array,
-    _id: mongoose.Schema.Types.ObjectId,
-    product: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
-    },
-    shippingAddress: {
+    user: {},
+    products: [
+      {
+        name: String,
+
+        price: Number,
+
+        quantity: Number,
+      },
+    ],
+
+    delivery: {
       address: { type: String },
       city: { type: String },
       postalCode: { type: String },
       country: { type: String },
     },
+    totalPrice: Number,
+    orderNumber: String,
     paymentMethod: { type: String },
-    itemsPrice: { type: Number },
     shippingPrice: { type: Number },
-    taxPrice: { type: Number },
-    totalPrice: { type: Number },
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-
     isPaid: { type: Boolean, default: false },
     paidAt: { type: Date },
     isDelivered: { type: Boolean, default: false },
@@ -31,3 +32,42 @@ const OrderSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('Order', OrderSchema);
+
+// const mongoose = require('mongoose');
+
+// const OrderSchema = new mongoose.Schema(
+//   {
+//     user: {},
+//     products: [
+//       {
+//     image:  String,
+
+//     cloudinary_id: String,
+
+//     name: String,
+
+//     price: Number,
+
+//     quantity:  Number,
+
+//   }],
+
+//     delivery: {
+//       address: { type: String },
+//       city: { type: String },
+//       postalCode: { type: String },
+//       country: { type: String },
+//     },
+//     totalPrice: Number,
+//     orderNumber: String,
+//     paymentMethod: { type: String },
+//     shippingPrice: { type: Number },
+//     isPaid: { type: Boolean, default: false },
+//     paidAt: { type: Date },
+//     isDelivered: { type: Boolean, default: false },
+//     deliveredAt: { type: Date },
+//   },
+//   { timestamps: true }
+// );
+
+// module.exports = mongoose.model('Order', OrderSchema);
