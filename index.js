@@ -1,6 +1,7 @@
 const express = require('express');
 require('dotenv').config();
 const debug = require('debug')('app');
+const cors = require('cors');
 const { port } = require('./config');
 
 const app = express();
@@ -10,6 +11,7 @@ const user = require('./Routes/user');
 const product = require('./Routes/product');
 const purchase = require('./Routes/order');
 
+app.use(cors({ origin: '*' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
