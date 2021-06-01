@@ -7,6 +7,7 @@ const PaymentSchema = new mongoose.Schema(
 
     data: {
       id: Number,
+      tx_ref: String,
       amount: Number,
       currency: String,
       created_at: String,

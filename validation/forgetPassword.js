@@ -1,8 +1,8 @@
 const Joi = require('joi');
 
-module.exports = function validate(req) {
+module.exports = function validate(input) {
   const schema = Joi.object({
-    email: Joi.string().email().min(3).max(300).required(),
+    email: Joi.string().email().lowercase().min(3).max(70).required(),
   });
-  return schema.validate(req);
+  return schema.validate(input);
 };

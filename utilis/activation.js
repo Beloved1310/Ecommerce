@@ -1,3 +1,5 @@
+const transporter = require('./mail');
+
 const emailData = (email, token, req) => {
   const data = {
     to: email,
@@ -10,4 +12,7 @@ const emailData = (email, token, req) => {
   return data;
 };
 
-module.exports = emailData;
+const sendEmail = async (email, token, req) => {
+  await transporter.sendMail(emailData(email, token, req));
+};
+module.exports = sendEmail;

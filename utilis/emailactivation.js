@@ -1,4 +1,6 @@
-const activationData = (email, req) => {
+const transporter = require('./mail');
+
+const activate = (email, req) => {
   const data = {
     to: email,
     from: 'fisayo@foodcrowdy.com',
@@ -8,4 +10,7 @@ const activationData = (email, req) => {
   return data;
 };
 
+const activationData = async (email, req) => {
+  await transporter.sendMail(activate(email, req));
+};
 module.exports = activationData;

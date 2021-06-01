@@ -1,22 +1,23 @@
 const Joi = require('joi');
 
-module.exports = function validate(req) {
+module.exports = function validate(input) {
   const schema = Joi.object({
-    status: Joi.string().min(3).max(300).required(),
-    message: Joi.string().min(3).max(300).required(),
+    status: Joi.string().required(),
+    message: Joi.string().required(),
 
     data: Joi.object().keys({
       id: Joi.number().required(),
+      tx_ref: Joi.string().required(),
       amount: Joi.number().required(),
       currency: Joi.string().required(),
       created_at: Joi.date().required(),
 
       customer: Joi.object().keys({
         id: Joi.number().required(),
-        name: Joi.string().min(5).label('First Name').required(),
-        email: Joi.string().email().min(3).max(300).required(),
+        fullname: Joi.string().required(),
+        email: Joi.string().email().min(3).max(300).lowercase().required(),
       }),
     }),
   });
-  return schema.validate(req);
+  return schema.validate(input);
 };

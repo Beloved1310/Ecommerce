@@ -1,4 +1,6 @@
-const forgotpassword = (email, token, req) => {
+const transporter = require('./mail');
+
+const emailData = (email, token, req) => {
   const mailData = {
     to: email,
     from: 'fisayo@foodcrowdy.com',
@@ -11,4 +13,7 @@ const forgotpassword = (email, token, req) => {
   return mailData;
 };
 
+const forgotpassword = async (email, token, req) => {
+  await transporter.sendMail(emailData(email, token, req));
+};
 module.exports = forgotpassword;
