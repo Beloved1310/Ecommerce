@@ -12,10 +12,10 @@ const ProductSchema = new mongoose.Schema(
       type: String,
     },
     price: {
-      type: String,
+      type: Number,
     },
     quantity: {
-      type: String,
+      type: Number,
     },
   },
   { timestamps: true }
