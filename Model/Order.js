@@ -14,11 +14,11 @@ const OrderSchema = new mongoose.Schema(
     delivery: {
       address: String,
       city: String,
-      postalCode: String,
+      postalCode: Number,
       country: String,
     },
     totalPrice: Number,
-    orderNumber: Number,
+    orderNumber: String,
     paymentMethod: String,
     shippingPrice: Number,
     isPaid: { type: Boolean, default: false },
