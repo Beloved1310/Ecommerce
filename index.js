@@ -1,4 +1,5 @@
 const express = require('express');
+// const ngrok = require('ngrok');
 require('dotenv').config();
 const debug = require('debug')('app');
 const { port } = require('./config');
@@ -22,3 +23,8 @@ const PORT = port || 7000;
 app.listen(PORT, () => {
   debug(`Web server is running ${PORT}`);
 });
+
+// (async () => {
+//   const url = await ngrok.connect(7000);
+//   console.log(url)
+// })();
