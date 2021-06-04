@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 const debug = require('debug')('app');
-const { port } = require('./config');
+const { PORT } = require('./config');
 
 const app = express();
 require('./startup/db')();
@@ -18,8 +18,6 @@ app.use(express.json());
 app.use('/', product);
 app.use('/', user);
 app.use('/', purchase);
-
-const PORT = port || 7000;
 
 app.listen(PORT, () => {
   debug(`Web server is running ${PORT}`);
