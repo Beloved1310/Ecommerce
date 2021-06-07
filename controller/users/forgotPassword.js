@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../../Model/User');
 const { FORGOT_PASSWORD } = require('../../config');
 const forgetPassword = require('../../validation/forgetPassword');
-const mailData = require('../../utilis/forgotPassword');
+const mailData = require('../../utilis/forgotpassword');
 
 module.exports = async (req, res) => {
   const { value, error } = forgetPassword(req.body);
