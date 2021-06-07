@@ -2,9 +2,6 @@ const mongoose = require('mongoose');
 
 const PaymentSchema = new mongoose.Schema(
   {
-    status: String,
-    message: String,
-
     data: {
       id: Number,
       tx_ref: String,
