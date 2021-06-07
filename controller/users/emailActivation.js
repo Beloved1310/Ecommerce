@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { ACCTIVATION_KEY } = require('../../config');
 const activatePassword = require('../../validation/activatePassword');
-const activationData = require('../../utilis/emailActivation');
+const activationData = require('../../utilis/emailactivation');
 
 module.exports = async (req, res) => {
   const { value, error } = activatePassword(req.body);
