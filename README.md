@@ -23,8 +23,7 @@ The Project is well documented on Postman. The Publication link is "https://docu
 
 # Deployment
 
-The Project live deployment is "https://fc-ecommerce-test.herokuapp.com"
-The Project is deployed using heroku and the Url is "https://eecommercee.herokuapp.com". Use the documentation to know the routes for easy navigation.
+The Project live deployment is "https://fc-ecommerce-test.herokuapp.com". Use the documentation to know the routes for easy navigation.
 
 # Built-With
 

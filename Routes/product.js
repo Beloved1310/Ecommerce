@@ -1,6 +1,3 @@
-/* eslint-disable camelcase */
-/* eslint consistent-return: "off" */
-
 const multer = require('multer');
 const express = require('express');
 const asyncMiddleware = require('../middleware/async');

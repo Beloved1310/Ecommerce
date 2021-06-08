@@ -17,19 +17,6 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
     gender: String,
-    age: Number,
-    education: {
-      grade: String,
-    },
-    experience: {
-      position: String,
-      company: String,
-      location: String,
-    },
-    resetLink: {
-      date: String,
-      default: '',
-    },
   },
   { timestamps: true }
 );

@@ -1,5 +1,3 @@
-/* eslint consistent-return: "off" */
-
 const express = require('express');
 const asyncMiddleware = require('../middleware/async');
 
