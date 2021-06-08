@@ -15,6 +15,7 @@
         "axios": "^0.21.1",
         "bcrypt": "^5.0.1",
         "cloudinary": "^1.25.1",
+        "cors": "^2.8.5",
         "debug": "^4.3.1",
         "dotenv": "^8.2.0",
         "express": "^4.17.1",
@@ -37,7 +38,7 @@
         "prettier": "^2.2.1"
     },
     "lint-staged": {
-        "*.js": "eslint ./",
+        "*.js": "eslint --cache --fix",
         "*.{js,md}": "prettier --write"
     },
     "engines": {
