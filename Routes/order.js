@@ -8,9 +8,16 @@ const checkout = require('../controller/orders/checkout');
 const webhook = require('../controller/orders/webhook');
 const getOrder = require('../controller/orders/getOrder');
 const adminGetUserOrder = require('../controller/orders/adminGetUserOrder');
+const adminGetOneUserOrder = require('../controller/orders/adminGetOneUserOrder');
 
 router.get('/order/me', auth, asyncMiddleware(getOrder));
 router.get('/order/admin', auth, isAdmin, asyncMiddleware(adminGetUserOrder));
+router.get(
+  '/order/admin/getoneuser/:id',
+  auth,
+  isAdmin,
+  asyncMiddleware(adminGetOneUserOrder)
+);
 
 router.post('/checkout', auth, asyncMiddleware(checkout));
 
