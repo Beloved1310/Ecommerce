@@ -11,8 +11,7 @@ module.exports = async (req, res) => {
   const { data } = value;
   const hash = req.headers['verify-hash'];
   if (hash !== MY_HASH) return res.send(401, 'Unauthorized User');
-  if (data.status !== 'successful')
-    return res.status(400).send({ message: 'Transaction Unsuccessful' });
+  if (data.status !== 'successful') return res.status(400).send();
 
   await Order.updateOne({ orderNumber: value.data.tx_ref }, { isPaid: true });
 
@@ -20,14 +19,5 @@ module.exports = async (req, res) => {
     data,
   });
 
-  const { id, tx_ref, amount, status, customer } = data;
-  const paymentResponse = {
-    id,
-    tx_ref,
-    amount,
-    status,
-    customer,
-  };
-
-  return res.send({ message: 'Transaction Successful', data: paymentResponse });
+  return res.status(200).send();
 };
