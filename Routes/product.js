@@ -29,7 +29,7 @@ router.post(
 );
 
 router.put(
-  '/product/put/:id',
+  '/product/:id',
   auth,
   isAdmin,
   upload.single('image'),
