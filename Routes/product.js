@@ -5,6 +5,7 @@ const asyncMiddleware = require('../middleware/async');
 const router = express.Router();
 
 const auth = require('../middleware/auth');
+const isAdmin = require('../middleware/isAdmin');
 
 const storage = require('../utilis/multer');
 
@@ -22,12 +23,15 @@ router.get('/:id', asyncMiddleware(getOneProduct));
 router.post(
   '/product',
   auth,
+  isAdmin,
   upload.single('image'),
   asyncMiddleware(uploadProduct)
 );
 
 router.put(
   '/product/:id',
+  auth,
+  isAdmin,
   upload.single('image'),
   asyncMiddleware(editProduct)
 );

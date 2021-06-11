@@ -17,13 +17,19 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
     gender: String,
+    isAdmin: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
 
-UserSchema.methods.generateAuthToken = () => {
+UserSchema.methods.generateAuthToken = function generatedToken() {
   const token = jwt.sign(
-    { _id: this._id, fullname: this._fullname, email: this.email },
+    {
+      _id: this._id,
+      fullname: this.fullname,
+      email: this.email,
+      isAdmin: this.isAdmin,
+    },
     JWT
   );
   return token;
