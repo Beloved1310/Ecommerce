@@ -10,11 +10,11 @@ module.exports = async (req, res) => {
 
   const user = await User.findOne({ email });
   if (!user)
-    return res.status(403).send({ error: 'username or password not found' });
+    return res.status(400).send({ error: 'username or password not found' });
 
   const validPassword = await bcrypt.compare(password, user.password);
   if (!validPassword)
-    return res.status(403).send({ error: 'username or password not found ' });
+    return res.status(400).send({ error: 'username or password not found ' });
 
   const token = user.generateAuthToken();
   res.header('x-auth-token', token);
